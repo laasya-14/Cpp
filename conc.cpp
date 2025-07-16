@@ -8,8 +8,6 @@ void check(T &a)
     cout<<"sth general"<<endl;
 }
 
-
-
 template<typename T>
 void check(vector<T> &a)
 {
@@ -28,7 +26,14 @@ int gcd2(int n, int m)
     return gcd(m, n%m);
 }
 
+// how to emulate partial template specialization with functions
+
+int check(int _)
+{
+    return 1;
+}
+
 int main()
 {
-    cout<<gcd2(10, 6)<<endl;
+    cout<<check(12)<<endl;
 }

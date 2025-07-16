@@ -1,106 +1,69 @@
 # Generic programming (Chap 7: Items 41 - 48)
-## Template Specialization
+## Template Specialization (Full and partial)
 
-templates have both type and non type parameters
+Templates have both type and non type parameters.  
+All variables are mentioned in the first line  .  
+The next dependent ones (ones that can be deduced or partially known from T) are put in the second line
 ```cpp
-template <typename T, int n>
+template <typename T>
+class Obj // --> any type
 
 template <typename T>
-void func<T*> // --> takes only pointer types for T
+class Obj<T*> // --> takes only pointer types (say int*, then T is int which can be used later)
 ```
-```cpp
-template <class T>
-void is(T a)
-{
-    cout<<"generic class"<<endl;
-}
 
-// template <typename T>
-// void is<vector<T>>(vector<T> &a)
-// {
-//     cout<<a.size()<<endl;
-// }
-// can't do this for functions (only for classes) - partial template specialization
+Partial template specilization only works for classes and variables.  
+Functions allow full specialization but not partial.  
+Alias (using) doesn't even allow full specializations
+
+**Work around for doing function partial template specializations**
+```cpp
+// if we can pass in through the parameters, we can just do overloading for this like
+template <typename T>
+void check(T &a) {}; //any general case
 
 template <typename T>
-void is
+void check(vector<T> &a){} //specific for vector and compiler picks this up
+```
+But if the template parameters are for inside the function body or the return type like: [link](https://www.fluentcpp.com/2017/08/15/function-templates-partial-specialization-cpp/)
+```cpp
+vector<T> v;
+v.reserve(1000);
+return v;
+```
+we can try this by:
+```cpp
+template <typename T>
+struct type_of<T>{};
 
-template <>
-void is<int>(int a)
+template <typename T>
+T create(type_of<T> _) //note _ or even empty works (means we don't really care of this variable or whatever)
 {
-    cout<<"specific int"<<endl;
+    // do general
 }
 
+template <typename T>
+vector<T> create(type_of<vector<T>> _)
+{
+    // do the vector stuff and return 
+    return v;
+}
 
-is(10);
-is("hello");
+template <typename T>
+T create()
+{
+    return create(type_of<T> {});
+}
 ```
-
+full specialization for non type parameters
 ```cpp
 template <int x>
-void compute()
-{
-    //do sth
-}
+void compute(){}
 
 template <>
 void compute<0>
 // ->ones that can already be devised from the parameters or already known as written below for partial template specialization
 ```
-## Item 41
-- Explicit Interfaces and Runtime polymorphism usually but templates enforce implicit interfaces and compile time polymorphism
-
-Implicit interfaces
-
-Compile time polymorphism
-
-examples for implicit and explicit interfaces using templates
-## Item 42
-typename and class are the same like
-```cpp
-template <typename T>
-class Hello{};
-//and
-
-template <class T>
-class Hello{};
-```
-but typename is also used to identify nested dependent type names
-Except in base class lists or as a base class identifier in a member initialization list  
-//Given an example for this case
-## Item 43
-
-```cpp
-template<typename Company>
-class LoggingMsg: public Msg<Company>{
-    public:
-    ...
-    void sendMsg(const Msginfo& info)
-    {
-        // this function send comes from base class Msg 
-        send(info); // -> throws an compiler error since the compiler's scope is only the current
-        this->send(info); // this works
-
-        //can do this as well
-        using Msg<Company>::send; //->tell the compiler to add this to the scope to check
-
-        // or to explicitly mention the base class
-        // but this turns off the virtual binding if the send is a virtual function and if this is overriden in this class
-        Msg<Company>::send(info)
-    }
-}
-```
-## Item 44
-Bloating and avoiding for templates
-
-## Item 45
-Using member function templates to accept all the compatible types
-## Item 46
-
-## Item 47
-using type traits and compile time distinguishing
-## Item 48
-Template MetaProgramming
 
 ## CRTP
 The CRTP consists in:
@@ -165,15 +128,7 @@ int main()
     check(obj2);
 }
 ```
-
-Doubts in this aspect:
-1. How do we guarantee that casting from base to derived in this case is safe and doesn't lead to undefined behaviours in other cases?
-2. What exactly is the usage and benefit of this polymorphism, in which cases and how do we need to use this?
 ## Concepts
-ways to use it
-```cpp
-
-```
 ```cpp
 class A{};
 class B{
@@ -210,6 +165,24 @@ int main()
     check(b);
 }
 ```
+ways to use it in functions
+```cpp
+// regular
+template <typename T>
+requires has_f<T>
+void check(T& x){};
+
+// trailing
+template <typename T>
+void check(T& x) requires has_f<T>{}
+
+// constrained
+template <has_f T>
+void check(T& x){};
+
+// abbreviated -- can't do auto in classes though
+void check(has_f auto x)
+```
 ## Random keywords and Info:
 1. An interface in C++ is:
 
@@ -232,3 +205,62 @@ class B{
 }
 ```
 5. constexpr??
+
+## Scott Meyers
+## Item 41
+- Explicit Interfaces and Runtime polymorphism usually but templates enforce implicit interfaces and compile time polymorphism
+
+Implicit interfaces
+
+Compile time polymorphism
+
+examples for implicit and explicit interfaces using templates
+## Item 42
+typename and class are the same like
+```cpp
+template <typename T>
+class Hello{};
+//and
+
+template <class T>
+class Hello{};
+```
+but typename is also used to identify nested dependent type names
+Except in base class lists or as a base class identifier in a member initialization list  
+//Given an example for this case
+## Item 43
+
+```cpp
+template<typename Company>
+class LoggingMsg: public Msg<Company>{
+    public:
+    ...
+    void sendMsg(const Msginfo& info)
+    {
+        // this function send comes from base class Msg 
+        send(info); // -> throws an compiler error since the compiler's scope is only the current
+        this->send(info); // this works
+
+        //can do this as well
+        using Msg<Company>::send; //->tell the compiler to add this to the scope to check
+
+        // or to explicitly mention the base class
+        // but this turns off the virtual binding if the send is a virtual function and if this is overriden in this class
+        Msg<Company>::send(info)
+    }
+}
+```
+## Item 44
+Bloating and avoiding for templates
+
+## Item 45
+Using member function templates to accept all the compatible types
+## Item 46
+
+## Item 47
+using type traits and compile time distinguishing
+## Item 48
+Template MetaProgramming
+
+### Doubts in this aspect:
+1. How do we guarantee that casting from base to derived in this case is safe and doesn't lead to undefined behaviours in other cases?
