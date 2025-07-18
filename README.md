@@ -1,5 +1,5 @@
 ## Resources
-### Template programming - [my notes](Scott_meyers\GenericProgramming.md) 
+### Template programming - [my notes](Scott_meyers/GenericProgramming.md) 
 - [github Shivam Verma notes](https://github.com/Shivam5022/Knowledgebase-SV/blob/main/notes/metaprogramming.md).  
 - CPPcon yt - [didn't check this but recommended](https://www.youtube.com/watch?v=vwrXHznaYLA)
 - CPPcon Walter Brown - (part 1 and 2) - [yt link part 2](https://www.youtube.com/watch?v=a0FliKwcwXE)
@@ -18,7 +18,7 @@
     - Scott Meyers Item 47
 - `decltype`
 
-### Casting - [my notes](Scott_meyers\Casting.md) 
+### Casting - [my notes](Scott_meyers/Casting.md) 
 
 ### Move and forward semantics
 
@@ -26,9 +26,9 @@
 
 ### Smart Pointers
 
-### Inlining - [my notes](Scott_meyers\General.md) 
+### Inlining - [my notes](Scott_meyers/General.md) 
 
-### Compiler silently writes - [my notes](Scott_meyers\General.md) 
+### Compiler silently writes - [my notes](Scott_meyers/General.md) 
 
 ###
 
