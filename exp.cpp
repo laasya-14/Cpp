@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <vector>
 using namespace std;
 
 class A{};
@@ -67,3 +67,34 @@ int main()
     check(obj1);
     check(obj2);
 }
+
+template<typename T>
+class Shape{
+    public:
+    int area(){
+        T &underlying = static_cast<T&>(*this);
+        return underlying->area();
+    }
+};
+
+class Circle: public Shape<Circle>{
+    public:
+    int radius;
+    Circle(int r): radius(r){};
+    int area()
+    {
+        return 3*radius*radius;
+       
+    }
+};
+
+template <typename T>
+int get_total_area(Shape<T> &shape)
+{
+    return shape.area();
+}
+
+// get_total
+
+// Shape *shape = new Circle(1);
+// shape->area()
